@@ -1,20 +1,29 @@
 package Principal;
 
 import CaracteristicasGrafo.Identificacao;
+import Objetos.Armazenamento.ElementoAdj;
 import Objetos.Armazenamento.Lista;
+import Objetos.Armazenamento.MatrizAdj;
+import Objetos.Armazenamento.MatrizInc;
 import Objetos.Grafo;
+import Util.CarregaConfiguracoes;
 import View.Login.Configuracao;
-import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import javafx.stage.FileChooser;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ButtonGroup;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 /**
  * Estudantes de Ciência da Computação - 4 fase.
- *  
+ *
  * @author Gustavo Souza
  * @author Luan Darabas
  * @author Luiz Alexandre da Luz
@@ -25,7 +34,7 @@ public class FramePrincipal extends javax.swing.JFrame {
     private Grafo grafo;
     private Identificacao ident;
     private ButtonGroup buttonGroup;
-    
+
     public FramePrincipal() {
         initComponents();
         ident = new Identificacao();
@@ -35,7 +44,7 @@ public class FramePrincipal extends javax.swing.JFrame {
         buttonGroup.add(rButtonListaAdj);
         buttonGroup.add(rButtonListaInc);
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -81,14 +90,14 @@ public class FramePrincipal extends javax.swing.JFrame {
             }
         });
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Grafo atual", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP));
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Grafo atual", 0, 2));
 
         textArea.setEditable(false);
         textArea.setColumns(20);
         textArea.setRows(5);
         jScrollPane1.setViewportView(textArea);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Visualizar", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Visualizar", 0, 2));
 
         rButtonMatrizAdj.setSelected(true);
         rButtonMatrizAdj.setText("Matriz de Adjacência");
@@ -204,14 +213,19 @@ public class FramePrincipal extends javax.swing.JFrame {
 
         jPanel4.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jButton3.setText("Carregar Grafo");
+        jButton3.setText("Importar Grafo");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
             }
         });
 
-        jButton4.setText("Salvar Grafo");
+        jButton4.setText("Exportar Grafo");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -309,6 +323,11 @@ public class FramePrincipal extends javax.swing.JFrame {
 
         jmiImportar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I, java.awt.event.InputEvent.CTRL_MASK));
         jmiImportar.setText("Importar");
+        jmiImportar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmiImportarActionPerformed(evt);
+            }
+        });
         jMenu1.add(jmiImportar);
 
         jmiExportar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
@@ -427,117 +446,155 @@ public class FramePrincipal extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         jmiImportar.doClick();
+        try {
+            importar();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(FramePrincipal.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton3ActionPerformed
 
-    private void verificaSeIraExibirOsDados(){
-        if (grafo != null){
-            if (rButtonMatrizAdj.isSelected()){
+    private void jmiImportarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiImportarActionPerformed
+
+    }//GEN-LAST:event_jmiImportarActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        exportar();
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void verificaSeIraExibirOsDados() {
+        if (grafo != null) {
+            if (rButtonMatrizAdj.isSelected()) {
                 exibirMatrizAdj();
-            } else if (rButtonMatrizInc.isSelected()){
+            } else if (rButtonMatrizInc.isSelected()) {
                 exibirMatrizInc();
-            } else if (rButtonListaAdj.isSelected()){
+            } else if (rButtonListaAdj.isSelected()) {
                 exibirListaAdc();
-            } else if (rButtonListaInc.isSelected()){
+            } else if (rButtonListaInc.isSelected()) {
                 exibirListaInc();
             }
         }
     }
-    
-    private void imprimirInformacoes(){
+
+    private void imprimirInformacoes() {
         // Imprime os Nós
-            String nosFormal = "Nós = {";
-            String[] nos = grafo.getNos();
-            for (int i = 0; i < grafo.quantidadeNos() - 1; i++){
-                nosFormal += nos[i] + ", ";
-            }
-            nosFormal += nos[nos.length - 1] + "}\n";
-            textArea.setText(nosFormal);
-            
-            // Imprime as Arestas
-            String arestasFormal = "Arestas = {";
-            String arestas[] = grafo.getArestas();
-            for (int i = 0; i < grafo.quantidadeArestas()- 1; i++){
-                arestasFormal += arestas[i] + ", ";
-            }
-            arestasFormal += arestas[arestas.length - 1] + "}\n\n";
-            textArea.setText(textArea.getText() + arestasFormal);
+        String nosFormal = "Nós = {";
+        String[] nos = grafo.getNos();
+        for (int i = 0; i < grafo.quantidadeNos() - 1; i++) {
+            nosFormal += nos[i] + ", ";
+        }
+        nosFormal += nos[nos.length - 1] + "}\n";
+        textArea.setText(nosFormal);
+
+        // Imprime as Arestas
+        String arestasFormal = "Arestas = {";
+        String arestas[] = grafo.getArestas();
+        for (int i = 0; i < grafo.quantidadeArestas() - 1; i++) {
+            arestasFormal += arestas[i] + ", ";
+        }
+        arestasFormal += arestas[arestas.length - 1] + "}\n\n";
+        textArea.setText(textArea.getText() + arestasFormal);
     }
-    
-    private void exibirMatrizAdj(){
+
+    private void exibirMatrizAdj() {
         textArea.setText("");
         imprimirInformacoes();
         textArea.setText(textArea.getText() + "------------------------------------------\n\n");
         textArea.setText(textArea.getText() + "Matriz de Adjacência: \n\n");
         textArea.setText(textArea.getText() + grafo.getMatrizAdj());
     }
-    
-    private void exibirMatrizInc(){
+
+    private void exibirMatrizInc() {
         textArea.setText("");
         imprimirInformacoes();
         textArea.setText(textArea.getText() + "-----------------------------------------\n\n");
         textArea.setText(textArea.getText() + "Matriz de Incidência: \n\n");
         textArea.setText(textArea.getText() + grafo.getMatrizInc());
     }
-    
-    private void exibirListaAdc(){
+
+    private void exibirListaAdc() {
         textArea.setText("");
         imprimirInformacoes();
         textArea.setText(textArea.getText() + "-----------------------------------------\n\n");
         textArea.setText(textArea.getText() + "Lista de Adjacência: \n\n");
         String[] nos = grafo.getNos();
         Lista[] lt = grafo.getListaAdj();
-        
-        for (int i = 0; i < grafo.quantidadeNos(); i++){
+
+        for (int i = 0; i < grafo.quantidadeNos(); i++) {
             textArea.setText(textArea.getText() + nos[i] + " -> " + lt[i] + "\n");
         }
     }
-    
-    private void exibirListaInc(){
+
+    private void exibirListaInc() {
         textArea.setText("");
         imprimirInformacoes();
         textArea.setText(textArea.getText() + "-----------------------------------------\n\n");
         textArea.setText(textArea.getText() + "Lista de Incidência: \n\n");
         String[] nos = grafo.getNos();
         Lista[] lt = grafo.getListaInc();
-        
-        for (int i = 0; i < grafo.quantidadeNos(); i++){
+
+        for (int i = 0; i < grafo.quantidadeNos(); i++) {
             textArea.setText(textArea.getText() + nos[i] + " -> " + lt[i] + "\n");
         }
     }
-    
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FramePrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FramePrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FramePrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FramePrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FramePrincipal().setVisible(true);
-            }
-        });
+    private void exportar() {
+        if (grafo == null){
+            JOptionPane.showMessageDialog(this, "Não existe um grafo para exportar", "Aviso" , JOptionPane.INFORMATION_MESSAGE);
+            return;
+        } 
+        try {
+//            CarregaConfiguracoes.saveVertice(Arrays.toString(grafo.getNos()));
+//            CarregaConfiguracoes.saveEdge(Arrays.toString(grafo.getArestas()));
+//            Lista<ElementoAdj>[] el = grafo.getListaAdj();
+//            String output = "";
+//            for(int i = 0; i < grafo.quantidadeNos(); i++){
+//                output += "[" + i + "]" + el[i].toString();
+//                if(i+1 != grafo.quantidadeNos()){
+//                    output += "/";
+//                }
+//            }
+//            System.out.println(output);
+//            CarregaConfiguracoes.setAdjList(output);
+            
+            FileOutputStream fos = new FileOutputStream("arquivo.txt");
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(grafo);
+            oos.flush();
+            oos.close();
+            
+            
+        } catch (IOException ex) {
+            Logger.getLogger(EntradaDados.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    private void importar() throws ClassNotFoundException {
+        try {
+//            String vert = CarregaConfiguracoes.getVertice().replace("[", "").replace("]", "");
+//            String arest = CarregaConfiguracoes.getEdge().replace("[", "").replace("]", "");
+//            
+//            grafo = new Grafo();
+//            grafo.setNos(vert.split(","));
+//            grafo.setArestas(arest.split(","));
+//            
+//            grafo.iniciarMatriz( new MatrizAdj(), grafo.quantidadeNos(), grafo.quantidadeNos());
+//            grafo.iniciarMatriz( new MatrizInc(), grafo.quantidadeNos(), grafo.quantidadeArestas());
+//            
+//            String a = CarregaConfiguracoes.getAdjList();
+                
+
+            FileInputStream in = new FileInputStream("arquivo.txt");
+            ObjectInputStream objectIn = new ObjectInputStream(in);
+            
+            grafo = (Grafo) objectIn.readObject();
+            in.close();
+            
+            verificaSeIraExibirOsDados();
+        } catch (IOException ex) {
+            Logger.getLogger(EntradaDados.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

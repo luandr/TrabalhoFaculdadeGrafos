@@ -1,5 +1,6 @@
 package Objetos.Armazenamento;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -12,7 +13,7 @@ import java.util.ArrayList;
  * @author Maurício Generoso - Classe implementada por Maurício
  * @param <T>
  */
-public class Lista<T> {
+public class Lista<T> implements Serializable {
 
     ArrayList<T> lista = new ArrayList<>();
 
@@ -28,6 +29,10 @@ public class Lista<T> {
         if (lista.isEmpty())
             return true;
         return false;
+    }
+    
+    public int tamanho(){
+        return lista.size();
     }
 
     @Override

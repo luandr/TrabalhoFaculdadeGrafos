@@ -22,7 +22,7 @@ import Objetos.Armazenamento.Matriz;
  * @author Luiz Alexandre da Luz
  * @author Maurício Generoso - Classe implementada por Maurício
  */
-public class Grafo {
+public class Grafo implements java.io.Serializable{
 
     // Matrizes
     private Matriz matrizAdj;
@@ -101,6 +101,13 @@ public class Grafo {
 
     public void iniciarMatriz(Matriz mt, int qntLinhas, int qntColunas) {
         mt.iniciarMatriz(qntLinhas, qntColunas);
+        
+        if (mt instanceof MatrizAdj){
+            matrizAdj = mt;
+        } else if (mt instanceof MatrizInc){
+            matrizInc = mt;
+        }
+        
     }
 
     public void iniciarListas() {
@@ -189,5 +196,9 @@ public class Grafo {
         listaInc[posicaoLista(noInicial)].adiciona(new ElementoInc(noFinal, aresta));
         System.out.println("Lista de Incidência direcionada: ");
         imprimirLista(listaInc);
+    }
+
+    public Grafo retornarGrafo() {
+        return this;
     }
 }

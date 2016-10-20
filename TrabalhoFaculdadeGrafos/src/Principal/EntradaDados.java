@@ -63,13 +63,13 @@ public class EntradaDados extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         rButtonCompleto = new javax.swing.JRadioButton();
         rButtonDefinir = new javax.swing.JRadioButton();
-        cBoxNoInicial = new javax.swing.JComboBox<String>();
+        cBoxNoInicial = new javax.swing.JComboBox<>();
         labelDefinirNo = new javax.swing.JLabel();
         labelDefinirNo2 = new javax.swing.JLabel();
-        cBoxNoFinal = new javax.swing.JComboBox<String>();
+        cBoxNoFinal = new javax.swing.JComboBox<>();
         buttonDefinirAdjacencia = new javax.swing.JButton();
         labelDefinirAresta = new javax.swing.JLabel();
-        cBoxAresta = new javax.swing.JComboBox<String>();
+        cBoxAresta = new javax.swing.JComboBox<>();
         buttonCriarGrafo = new javax.swing.JButton();
         buttonCancelar = new javax.swing.JButton();
         buttonLimpar = new javax.swing.JButton();
@@ -77,8 +77,13 @@ public class EntradaDados extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Definição formal do Grafo", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Definição formal do Grafo", 0, 2));
 
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -545,6 +550,7 @@ public class EntradaDados extends javax.swing.JFrame {
 
     private void buttonCriarGrafoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCriarGrafoActionPerformed
         if (rButtonDefinir.isSelected()){
+//            exportar(grafo);
             this.dispose();
         } else {
             if (entradaNos.getText().trim().equals("")){
@@ -552,7 +558,7 @@ public class EntradaDados extends javax.swing.JFrame {
             } else {
                // CRIA AUTOMATICAMENTE O GRAFO COMPLETO
                grafo.setNos(capturarNos(entradaNos.getText()));
-               
+                
                int contArestas = 0;
                for (int i = 0; i < grafo.quantidadeNos(); i++){
                    for (int j = i + 1; j < grafo.quantidadeNos(); j++){
@@ -601,6 +607,7 @@ public class EntradaDados extends javax.swing.JFrame {
                         } // fim do for
                     } // fim do for
                } // fim do else
+//               exportar(grafo);
                this.dispose();
             } // fim do else
         } // fim do else
@@ -618,6 +625,24 @@ public class EntradaDados extends javax.swing.JFrame {
         jlInfoMessage.setText("Exemplo: A = {a1, a2, a3}");
     }//GEN-LAST:event_entradaArestasFocusGained
 
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // TODO add your handling code here:
+    }//GEN-LAST:event_formWindowClosing
+//
+//    private void exportar(Grafo grafo){
+//        System.out.println("CARALHO");
+//        try {
+//            System.out.println("CARALHO2");
+//            CarregaConfiguracoes.saveVertice(Arrays.toString(grafo.getNos()));
+//            CarregaConfiguracoes.saveEdge(Arrays.toString(grafo.getArestas()));
+//            
+//            System.out.println("CARALHO3");
+//        } catch (IOException ex) {
+//            Logger.getLogger(EntradaDados.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//    }
+    
+    
     private int posicaoNoInicialSelecionado() {
         String tempNoInicialSelected = cBoxNoInicial.getItemAt(cBoxNoInicial.getSelectedIndex());
         int posicaoLinhaNo = 0;

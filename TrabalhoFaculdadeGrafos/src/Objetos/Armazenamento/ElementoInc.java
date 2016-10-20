@@ -1,5 +1,7 @@
 package Objetos.Armazenamento;
 
+import java.io.Serializable;
+
 /**
  *  Esta classe é um complemento para ser usada na Lista de Incidência onde armazena o nó e a aresta da adjacência..
  * 
@@ -10,7 +12,7 @@ package Objetos.Armazenamento;
  * @author Luiz Alexandre da Luz
  * @author Maurício Generoso - Classe implementada por Maurício
 */
-public class ElementoInc {
+public class ElementoInc implements Serializable {
 
     private String no;
     private String aresta;

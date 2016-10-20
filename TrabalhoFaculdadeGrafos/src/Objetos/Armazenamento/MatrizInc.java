@@ -1,5 +1,7 @@
 package Objetos.Armazenamento;
 
+import java.io.Serializable;
+
 /**
  * 
  * Classe que representa e herda de "Matriz"; É implementado nesta subclasse como é alterado os dados de um grafo em Matriz de Incidência.
@@ -11,7 +13,7 @@ package Objetos.Armazenamento;
  * @author Luiz Alexandre da Luz
  * @author Maurício Generoso - Classe implementada por Maurício
  */
-public class MatrizInc extends Matriz {
+public class MatrizInc extends Matriz implements Serializable {
     
     public void alterarMatrizGrafoDirecionado(int noInicial, int noFinal, int aresta) {
         if (noInicial == noFinal){
